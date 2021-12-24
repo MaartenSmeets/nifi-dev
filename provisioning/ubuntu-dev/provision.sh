@@ -10,7 +10,7 @@ apt-get install --no-install-recommends ubuntu-desktop
 apt-get -y install aptitude
 aptitude -y install --without-recommends ubuntu-desktop 
 apt-get -y install gnome-session gnome-terminal tasksel terminator firefox jq apt-transport-https ca-certificates gnupg2 curl software-properties-common docker-ce docker-compose libxss1 libgconf-2-4 evince socat maven openjdk-11-jdk xfonts-terminus fonts-terminus console-terminus mlocate
-#tasksel install ubuntu-desktop-minimal
+tasksel install ubuntu-desktop-minimal
 
 #Fix root not allowed to start X-window
 xhost local:root
