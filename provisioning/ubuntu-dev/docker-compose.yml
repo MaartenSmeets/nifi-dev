@@ -20,7 +20,8 @@ services:
       - "8443:8443"
     environment:
       SINGLE_USER_CREDENTIALS_USERNAME: admin
-      SINGLE_USER_CREDENTIALS_PASSWORD: Welcome01
+      SINGLE_USER_CREDENTIALS_PASSWORD: V2VsY29tZTAx
+      #Welcome01
   nifi-registry:
     image: apache/nifi-registry:1.15.1
     ports:
