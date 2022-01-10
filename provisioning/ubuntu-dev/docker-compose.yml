@@ -9,7 +9,9 @@ services:
     ports:
       - "9092:9092"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      #Should be the same as the service. Zookeeper will indicate this as bootstrap server
+      #in order to access Kafka from the Docker host, make sure kafka resolves to localhost, override the bootstrap server or start tooling from containers inside the same network
       KAFKA_CREATE_TOPICS: "test:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
