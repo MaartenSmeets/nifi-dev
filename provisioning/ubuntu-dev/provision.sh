@@ -31,14 +31,7 @@ apt-get autoremove
 apt-get clean
 
 mkdir /home/developer/comp
-cp /vagrant/Dockerfile /home/developer/comp
 cp /vagrant/docker-compose.yml /home/developer/comp
-cp /vagrant/broker-list.sh /home/developer/comp
-cp /vagrant/create-topics.sh /home/developer/comp
-cp /vagrant/download-kafka.sh /home/developer/comp
-cp /vagrant/start-kafka.sh /home/developer/comp
-cp /vagrant/versions.sh /home/developer/comp
-cp -R /vagrant/overrides /home/developer/comp/overrides
 
 chown -R developer:developer /home/developer/comp
 cd /home/developer/comp
