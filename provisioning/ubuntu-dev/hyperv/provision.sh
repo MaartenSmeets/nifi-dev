@@ -39,4 +39,5 @@ docker-compose pull -q
 curl https://www.kafkatool.com/download2/offsetexplorer.sh -o /home/developer/kafkatool.sh
 chown developer:developer /home/developer/kafkatool.sh
 
+
 shutdown now -h
