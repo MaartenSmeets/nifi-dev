@@ -39,6 +39,4 @@ docker-compose pull -q
 curl https://www.kafkatool.com/download2/offsetexplorer.sh -o /home/developer/kafkatool.sh
 chown developer:developer /home/developer/kafkatool.sh
 
-sudo sed -i 's/"quiet splash"/"quiet splash video=hyperv_fb:1920x1080"/g' /etc/default/grub && sudo update-grub
-
 shutdown now -h
