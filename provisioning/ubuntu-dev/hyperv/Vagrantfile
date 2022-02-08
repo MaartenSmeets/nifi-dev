@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+unless Vagrant.has_plugin?("vagrant-disksize")
+  puts 'Installing vagrant-disksize Plugin...'
+  system('vagrant plugin install vagrant-disksize')
+end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.define "ubuntudev" , primary: true do |ubuntudev|
+  config.vm.provider "hyperv"
+  config.vm.network "public_network"  
+  config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "maartensmeets@outlook.com", smb_password: "Di1vIzTje8NNN"
+  #https://stackoverflow.com/questions/54264439/how-to-get-shared-folders-working-with-vagrant-and-hyper-v
+  ubuntudev.vm.box = "generic/ubuntu2110"
+  ubuntudev.vm.box_version = "3.6.8"
+  ubuntudev.vm.hostname = "ubuntunifidev"
+  ubuntudev.disksize.size = '75GB'
+  ubuntudev.vm.provider :hyperv do |h|
+      h.enable_virtualization_extensions = true
+	  h.linked_clone = true
+	  h.cpus = 6
+  end
+
+  #this starts provisioning the machine
+  ubuntudev.vm.provision :shell, path: "provision.sh"
+  end
+
+end
