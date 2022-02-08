@@ -22,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "ubuntudev" , primary: true do |ubuntudev|
   config.vm.provider "hyperv"
   config.vm.network "public_network"  
-  config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "maartensmeets@outlook.com", smb_password: "Di1vIzTje8NNN"
+  config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "USERNAME", smb_password: "PASSWORD"
   #https://stackoverflow.com/questions/54264439/how-to-get-shared-folders-working-with-vagrant-and-hyper-v
   ubuntudev.vm.box = "generic/ubuntu2110"
   ubuntudev.vm.box_version = "3.6.8"
