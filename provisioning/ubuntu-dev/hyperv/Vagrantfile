@@ -17,13 +17,17 @@ unless Vagrant.has_plugin?("vagrant-disksize")
   system('vagrant plugin install vagrant-disksize')
 end
 
+unless Vagrant.has_plugin?("vagrant-sshfs")
+  puts 'Installing vagrant-sshfs Plugin...'
+  system('vagrant plugin install vagrant-sshfs')
+end
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "ubuntudev" , primary: true do |ubuntudev|
   config.vm.provider "hyperv"
   config.vm.network "public_network"  
-  config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "USERNAME", smb_password: "PASSWORD"
-  #https://stackoverflow.com/questions/54264439/how-to-get-shared-folders-working-with-vagrant-and-hyper-v
+  config.vm.synced_folder ".", "/vagrant", type: "sshfs", sshfs_opts_append: "-o nonempty -o cache=no", disabled: false
   ubuntudev.vm.box = "generic/ubuntu2110"
   ubuntudev.vm.box_version = "3.6.8"
   ubuntudev.vm.hostname = "ubuntunifidev"
@@ -32,6 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       h.enable_virtualization_extensions = true
 	  h.linked_clone = true
 	  h.cpus = 6
+	  h.maxmemory = 8192
   end
 
   #this starts provisioning the machine
