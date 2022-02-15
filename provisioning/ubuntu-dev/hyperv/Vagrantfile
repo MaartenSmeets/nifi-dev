@@ -28,7 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "hyperv"
   config.vm.network "public_network"  
   config.vm.synced_folder ".", "/vagrant", type: "sshfs", sshfs_opts_append: "-o nonempty -o cache=no", disabled: false
-  ubuntudev.vm.box = "generic/ubuntu2110"
+  ubuntudev.vm.box = "generic/ubuntu2104"
   ubuntudev.vm.box_version = "3.6.8"
   ubuntudev.vm.hostname = "ubuntunifidev"
   ubuntudev.disksize.size = '75GB'
@@ -44,3 +44,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
 end
+
+

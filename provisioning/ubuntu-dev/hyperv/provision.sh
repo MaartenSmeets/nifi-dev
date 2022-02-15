@@ -1,12 +1,12 @@
 #Desktop
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 apt-cache policy docker-ce
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu impish stable"
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu hirsute stable"
 apt-get update
 apt-get install --no-install-recommends ubuntu-desktop
 apt-get -y install aptitude
 aptitude -y install --without-recommends ubuntu-desktop 
-apt-get -y install gnome-session gnome-terminal tasksel terminator firefox jq apt-transport-https ca-certificates gnupg2 curl software-properties-common docker-ce docker-compose libxss1 libgconf-2-4 evince socat maven openjdk-11-jdk xfonts-terminus fonts-terminus console-terminus mlocate xrdp
+apt-get -y install gnome-session gnome-terminal tasksel terminator firefox jq apt-transport-https ca-certificates gnupg2 curl software-properties-common docker-ce docker-compose libxss1 libgconf-2-4 evince socat maven openjdk-11-jdk xfonts-terminus fonts-terminus console-terminus mlocate xrdp tasksel tigervnc-standalone-server tigervnc-xorg-extension tigervnc-viewer
 apt-get -y install --reinstall debconf
 tasksel install ubuntu-desktop-minimal
 
