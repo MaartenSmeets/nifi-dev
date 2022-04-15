@@ -42,6 +42,23 @@ def init_lookups():
     for pg in pg_list:
         name_to_id[pg.component.name] = pg.id
         id_to_name[pg.id] = pg.component.name
+
+
+def empty_queues(app):
+    app_pg_groups = nipyapi.canvas.list_all_process_groups(name_to_id[app])
+    # Empty queues
+    for app_pg_group in app_pg_groups:
+        log.info("Remove all messages on connection queues of: " + str(app_pg_group.component.name))
+        for con in nipyapi.canvas.list_all_connections(app_pg_group.id,True):
+            if (con.status.aggregate_snapshot.queued_count is not '0'):
+                log.info("Empty queue: " + str(con.id))
+                mycon = nipyapi.nifi.ConnectionsApi().get_connection(con.id)
+                oldexp = mycon.component.flow_file_expiration
+                mycon.component.flow_file_expiration = '1 sec'
+                nipyapi.nifi.ConnectionsApi().update_connection(con.id, mycon)
+                time.sleep(10)
+                mycon.component.flow_file_expiration = oldexp
+                nipyapi.nifi.ConnectionsApi().update_connection(con.id, mycon)
  
  
 def disable_proc(app):
