@@ -2,6 +2,7 @@ import nipyapi
 import logging
 import urllib3
 import time
+import base64
  
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
