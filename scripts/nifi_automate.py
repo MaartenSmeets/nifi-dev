@@ -113,6 +113,28 @@ def get_unused_parameters(app):
                     print("Context: " + str(pg.parameter_context.component.name)+". Sensitive parameter " + str(param.parameter.name) + " has no value set")
          else:
              print("Process group: " + str(pg.component.name) + " has no parameter context assigned")
+
+           
+def export_parameters(app):
+    app_pg_groups = nipyapi.canvas.list_all_process_groups(name_to_id[app])
+    for pg in app_pg_groups:
+        if (pg.parameter_context is not None):
+            param_context = nipyapi.nifi.ParameterContextsApi().get_parameter_context(pg.parameter_context.component.id)
+            params = param_context.component.parameters
+            for param in params:
+                if len(param.parameter.referencing_components) > 0 and param.parameter.inherited is None:
+                    paramvalue = param.parameter.value
+                    paramtype = "Text"
+                    if param.parameter.sensitive:
+                        paramtype = "Sensitive"
+                    elif paramvalue is None:
+                        paramtype = "None"
+                    elif "\""  in paramvalue or "\n" in paramvalue:
+                        paramtype = "Base64"
+                        paramvalue_bytes = paramvalue.encode(encoding='UTF-8', errors='strict')
+                        base64_bytes= base64.b64encode(paramvalue_bytes)
+                        paramvalue = base64_bytes.decode('UTF-8')
+                    print("\"" + str(pg.parameter_context.component.name)+"\",\"" + str(param.parameter.name) + "\",\"" + str(paramtype)+"\",\"" + str(paramvalue)+"\"")
  
  
 if __name__ == '__main__':
