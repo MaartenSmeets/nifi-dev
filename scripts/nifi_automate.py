@@ -97,6 +97,23 @@ def enable_proc(app):
         nipyapi.canvas.schedule_process_group(app_pg_group.id, True)
 
 
+def disable_proc(app):
+    if not check_unique_pg_group_name(app):
+        raise Exception('Process group ' + str(app) + ' is not unique')
+    app_pg_groups = nipyapi.canvas.list_all_process_groups(pg_lookup_name[app][0])
+    # Disable controllers, process groups and empty queues
+    for app_pg_group in app_pg_groups:
+        log.info("Disabling process group: " + str(app_pg_group.component.name))
+        nipyapi.canvas.schedule_process_group(app_pg_group.id, False)
+        #log.info("Remove all messages on connection queues of: " + str(app_pg_group.component.name))
+        #nipyapi.canvas.purge_process_group(app_pg_group, stop=False)
+        log.info("Disabling controllers for: " + str(app_pg_group.component.name))
+        acse = nipyapi.nifi.ActivateControllerServicesEntity()
+        acse.state = "DISABLED"
+        acse.id = app_pg_group.id
+        nipyapi.nifi.FlowApi().activate_controller_services(id=app_pg_group.id, body=acse)
+        
+        
 def get_unused_controller_services(app):
     if not check_unique_pg_group_name(app):
         raise Exception('Process group ' + str(app) + ' is not unique')
