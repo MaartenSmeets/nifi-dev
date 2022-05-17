@@ -326,6 +326,7 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
                         log.info("Parameter: " + str(paramline['param_name'] + " in " + str(
                             paramline['context'])) + " already exists. Not overwriting")
                         param_done = True
+                        param_changed_so_call_api = False
                         break
                     else:
                         if paramline['param_sensitive'] == 'True' and paramline['param_value'] != '':
@@ -371,4 +372,4 @@ if __name__ == '__main__':
     log.info("Logged in: " + str(nifi_login()))
     init_lookups()
     # export_parameters('export.csv')
-    import_parameters('export.csv', overwrite_existing_params=True, dummyrun=True)
+    import_parameters('export.csv', overwrite_existing_params=False, dummyrun=False)
