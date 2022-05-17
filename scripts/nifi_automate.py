@@ -219,11 +219,11 @@ def str_to_bool(str_bool):
 
 
 def create_param_entity(myparam_entity, param_props):
-    # parameter entity wraps list of parameter dto
     param_changed = False
     if myparam_entity is None:
-        log.info('Parameter DTO not supplied to create_param_entity. Creating a new one')
+        log.info('Parameter entity not supplied to create_param_entity. Creating a new one')
         myparam_entity = ParameterEntity()
+        myparam_entity.parameter = ParameterDTO()
         param_changed = True
 
     myparam_entity.parameter.name = param_props['param_name']
@@ -345,17 +345,16 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
                             update_param = False
 
                         if update_param:
-                            param_changed_so_call_api, paramdto = create_param_entity(param_obj, paramline)
-                            param_context.component.parameters[i] = paramdto
+                            param_changed_so_call_api, parament = create_param_entity(param_obj, paramline)
+                            param_context.component.parameters[i] = parament
                         param_done = True
                         break
 
             # The parameter does not exist and needs to be created
             if not param_done:
-                param_updated, paramdto = create_param_entity(None, paramline)
+                param_updated, parament = create_param_entity(None, paramline)
                 param_changed_so_call_api = True
-                param_context.component.parameters.can_write = True
-                param_context.component.parameters.append(paramdto)
+                param_context.component.parameters.append(parament)
                 log.info("Adding parameter: " + str(paramline['param_name']) + " to " + str(paramline['context']))
                 # print("To " + str(param_context))
 
