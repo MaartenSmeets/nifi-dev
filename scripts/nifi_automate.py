@@ -299,27 +299,22 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
                                                                                       name=paramline['context']))
                 if not dummyrun:
                     # Create new context
-                    newparamcontext = nipyapi.nifi.ParameterContextsApi().create_parameter_context(body=myparamcontext)
+                    param_context = nipyapi.nifi.ParameterContextsApi().create_parameter_context(body=myparamcontext)
                     log.info("Created context " + str(paramline['context']))
                 else:
                     # Generate a dummy context
-                    newparamcontext = create_dummy_param_context(paramline['context'],
+                    param_context = create_dummy_param_context(paramline['context'],
                                                                  str('DUMMY_') + str(uuid.uuid1()))
                     log.info("Created dummy context " + str(paramline['context']))
 
-                pc_lookup_name[newparamcontext.component.name] = newparamcontext.component.id
-                pc_lookup_id[newparamcontext.component.id] = newparamcontext.component.name
+                pc_lookup_name[param_context.component.name] = param_context.component.id
+                pc_lookup_id[param_context.component.id] = param_context.component.name
             else:
                 log.info("Context found. Fetching")
                 param_context = nipyapi.nifi.ParameterContextsApi().get_parameter_context(
                     id=pc_lookup_name[paramline['context']])
 
             # at this point we know the parameter context exists
-            if dummyrun and pc_lookup_name[paramline['context']].startswith('DUMMY_'):
-                # it's fake!
-                # pc_lookup_name[paramline['context']].startswith('DUMMY_') means the context didn't exist and a dummy was created
-                # it can also be that it is a dummyrun but the context already exists and is fetched. in this case we do not want to overwrite the context with a dummy
-                param_context = create_dummy_param_context(paramline['context'], pc_lookup_name[paramline['context']])
 
             param_done = False
             for i, param_obj in enumerate(param_context.component.parameters):
@@ -373,4 +368,4 @@ if __name__ == '__main__':
     log.info("Logged in: " + str(nifi_login()))
     init_lookups()
     # export_parameters('export.csv')
-    import_parameters('export.csv', overwrite_existing_params=True, dummyrun=False)
+    import_parameters('export.csv', overwrite_existing_params=True, dummyrun=True)
