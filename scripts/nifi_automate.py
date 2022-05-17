@@ -6,7 +6,7 @@ import uuid
 
 import nipyapi
 import urllib3
-from nipyapi.nifi import ParameterContextEntity, ParameterContextDTO, ParameterDTO, ParameterEntity
+from nipyapi.nifi import ParameterContextEntity, ParameterContextDTO, ParameterDTO
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -211,16 +211,33 @@ def context_exists(context_name):
         return False
 
 
-def create_param_entity(myparam, param_props):
-    if myparam is None:
-        myparam = ParameterDTO()
-        myparam.referencing_components = []
-
-    myparam.name = param_props['param_name']
-    if param_props['param_sensitive'] == 'True':
-        myparam.sensitive = True
+def str_to_bool(str_bool):
+    if str_bool == 'True':
+        return True
     else:
-        myparam.sensitive = False
+        return False
+
+
+def create_param_dto(myparamdto, param_props):
+    # parameter entity wraps list of parameter dto
+    param_changed = False
+    if myparamdto is None:
+        log.info('Parameter DTO not supplied to create_param_entity. Creating a new one')
+        myparamdto = ParameterDTO()
+        myparamdto.referencing_components = []
+        param_changed = True
+
+    myparamdto.parameter.name = param_props['param_name']
+
+    if hasattr(myparamdto.parameter, 'sensitive') and str_to_bool(
+            param_props['param_sensitive']) == myparamdto.parameter.sensitive:
+        log.info(
+            'Not updating sensitive property of ' + str(myparamdto.parameter.name) + ' since its value is unchanged')
+    else:
+        log.info('Updating sensitive property of ' + str(myparamdto.parameter.name) + ' to ' + str(
+            param_props['param_sensitive']))
+        myparamdto.parameter.sensitive = str_to_bool(param_props['param_sensitive'])
+        param_changed = True
 
     if param_props['param_value_type'] == 'Text':
         newvalue = param_props['param_value']
@@ -231,7 +248,12 @@ def create_param_entity(myparam, param_props):
     else:
         raise Exception('Unknown parameter type: ' + str(param_props['param_value_type']))
 
-    myparam.value = newvalue
+    if hasattr(myparamdto.parameter, 'value') and myparamdto.parameter.value == newvalue:
+        log.info('Not updating value of ' + str(myparamdto.parameter.name) + ' since its value is unchanged')
+    else:
+        log.info('Updating value of ' + str(myparamdto.parameter.name))
+        myparamdto.parameter.value = newvalue
+        param_changed = True
 
     if param_props['param_descr_type'] == 'Text':
         newdescription = param_props['param_descr']
@@ -240,12 +262,18 @@ def create_param_entity(myparam, param_props):
     else:
         raise Exception('Unknown description type: ' + str(param_props['param_descr_type']))
 
-    myparam.description = newdescription
+    if hasattr(myparamdto.parameter, 'description') and myparamdto.parameter.description == newdescription:
+        log.info('Not updating description of ' + str(myparamdto.parameter.name) + ' since its value is unchanged')
+    else:
+        log.info('Updating description of ' + str(myparamdto.parameter.name))
+        myparamdto.parameter.description = newdescription
+        param_changed = True
 
-    parament = ParameterEntity()
-    parament.parameter = myparam
-    parament.can_write = True
-    return parament
+    if param_changed:
+        log.info('Parameter ' + str(myparamdto.parameter.name) + ' has been updated!')
+    else:
+        log.info('Parameter ' + str(myparamdto.parameter.name) + ' has not been updated!')
+    return param_changed, myparamdto
 
 
 def create_dummy_param_context(pc_name, pc_id):
@@ -264,7 +292,7 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
             # create the parameter context if needed
             context_dummy = False
             if not context_exists(paramline['context']):
-
+                log.info("Context not found. Creating")
                 # nipyapi.parameters.create_parameter_context(paramline['context'])
 
                 myparamcontext = ParameterContextEntity(revision=nipyapi.nifi.RevisionDTO(version=0),
@@ -283,14 +311,17 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
 
                 pc_lookup_name[newparamcontext.component.name] = newparamcontext.component.id
                 pc_lookup_id[newparamcontext.component.id] = newparamcontext.component.name
+            else:
+                log.info("Context found. Updating")
+                param_context = nipyapi.nifi.ParameterContextsApi().get_parameter_context(
+                    id=pc_lookup_name[paramline['context']])
 
             # at this point we know the parameter context exists
             if dummyrun and pc_lookup_name[paramline['context']].startswith('DUMMY_'):
                 # it's fake!
+                # pc_lookup_name[paramline['context']].startswith('DUMMY_') means the context didn't exist and a dummy was created
+                # it can also be that it is a dummyrun but the context already exists and is fetched. in this case we do not want to overwrite the context with a dummy
                 param_context = create_dummy_param_context(paramline['context'], pc_lookup_name[paramline['context']])
-            else:
-                param_context = nipyapi.nifi.ParameterContextsApi().get_parameter_context(
-                    id=pc_lookup_name[paramline['context']])
 
             param_done = False
             for i, param_obj in enumerate(param_context.component.parameters):
@@ -316,26 +347,33 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
                             update_param = False
 
                         if update_param:
-                            parament = create_param_entity(param_obj, paramline)
-                            param_context.component.parameters[i] = parament
+                            param_changed_so_call_api, paramdto = create_param_dto(param_obj, paramline)
+                            param_context.component.parameters[i] = paramdto
                         param_done = True
                         break
 
             # The parameter does not exist and needs to be created
             if not param_done:
-                parament = create_param_entity(None, paramline)
-                param_context.component.parameters.append(parament)
-                log.info("Adding parameter: " + str(paramline['param_name']) + " in " + str(paramline['context']))
+                param_updated, paramdto = create_param_dto(None, paramline)
+                param_changed_so_call_api = True
+                param_context.component.parameters.can_write = True
+                param_context.component.parameters.append(paramdto)
+                log.info("Adding parameter: " + str(paramline['param_name']) + " to " + str(paramline['context']))
                 # print("To " + str(param_context))
-            if not dummyrun:
-                nipyapi.nifi.ParameterContextsApi().submit_parameter_context_update(context_id=param_context.id,
-                                                                                    body=param_context)
+
+            if param_changed_so_call_api:
+                log.info("Parameter changed so calling the API to update it")
+                if not dummyrun:
+                    nipyapi.nifi.ParameterContextsApi().submit_parameter_context_update(context_id=param_context.id,
+                                                                                        body=param_context)
+                else:
+                    log.info("Dummy run. Not updating parameter context")
             else:
-                log.info("Dummy run. Not updating parameter context")
+                log.info("Parameter not changed so not calling the API to update it")
 
 
 if __name__ == '__main__':
     log.info("Logged in: " + str(nifi_login()))
     init_lookups()
-    #export_parameters('export.csv')
-    import_parameters('export.csv', overwrite_existing_params=True, dummyrun=True)
+    # export_parameters('export.csv')
+    import_parameters('export.csv', overwrite_existing_params=True, dummyrun=False)
