@@ -311,8 +311,11 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
                 pc_lookup_id[param_context.component.id] = param_context.component.name
             else:
                 log.info("Context found. Fetching")
-                param_context = nipyapi.nifi.ParameterContextsApi().get_parameter_context(
-                    id=pc_lookup_name[paramline['context']])
+                if dummyrun and pc_lookup_name[paramline['context']].startswith('DUMMY_'):
+                    #we are dealing with a dummy context created in one of the earlier parameter lines
+                    param_context = create_dummy_param_context(paramline['context'], pc_lookup_name[paramline['context']])
+                else:
+                    param_context = nipyapi.nifi.ParameterContextsApi().get_parameter_context(id=pc_lookup_name[paramline['context']])
 
             # at this point we know the parameter context exists
 
