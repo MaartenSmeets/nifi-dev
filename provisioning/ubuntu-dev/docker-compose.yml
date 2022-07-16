@@ -17,7 +17,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   nifi:
-    image: apache/nifi:1.15.1
+    image: apache/nifi:1.16.3
     ports:
       - "8443:8443"
     environment:
