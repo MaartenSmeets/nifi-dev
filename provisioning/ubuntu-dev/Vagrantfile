@@ -26,19 +26,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "ubuntudev" , primary: true do |ubuntudev|
  
-  ubuntudev.vm.box = "ubuntu/focal64"
-  ubuntudev.vm.box_version = "20211026.0.0"
+  ubuntudev.vm.box = "ubuntu/jammy64"
+  #ubuntudev.vm.box_version = "20211026.0.0"
   ubuntudev.vm.hostname = "ubuntunifidev"
   ubuntudev.disksize.size = '75GB'
   ubuntudev.vbguest.auto_update = true
   ubuntudev.vm.provider :virtualbox do |vb|
 	  vb.customize ["modifyvm"     , :id, "--memory", "16384"]
       vb.customize ["modifyvm"     , :id, "--name"  , "Ubuntu NiFi Dev"]
-      vb.customize ["modifyvm"     , :id, "--cpus"  , 6]
+      vb.customize ["modifyvm"     , :id, "--cpus"  , 2]
 	  vb.customize ["modifyvm"     , :id, "--clipboard","bidirectional"]
 	  vb.customize ["modifyvm"     , :id, "--vram","64"]
-	  vb.customize ["modifyvm"     , :id, "--graphicscontroller","vmsvga"]
-	  vb.customize ["modifyvm"     , :id, "--accelerate3d","on"]
   end
 
   #this starts provisioning the machine

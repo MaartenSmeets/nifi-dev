@@ -1,15 +1,14 @@
 #Desktop
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 apt-cache policy docker-ce
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-apt-get update
+add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
 apt-get install --no-install-recommends ubuntu-desktop
 apt-get -y install aptitude
 aptitude -y install --without-recommends ubuntu-desktop 
 apt-get -y install gnome-session gnome-terminal tasksel terminator firefox jq apt-transport-https ca-certificates gnupg2 curl software-properties-common docker-ce docker-compose libxss1 libgconf-2-4 evince socat maven openjdk-11-jdk xfonts-terminus fonts-terminus console-terminus mlocate
 apt-get -y install --reinstall debconf
 tasksel install ubuntu-desktop-minimal
-
+fc-cache -f -v
 #Fix root not allowed to start X-window
 xhost local:root
 
@@ -27,6 +26,9 @@ echo 'SystemAccount=true' >> /var/lib/AccountsService/users/vagrant
 
 cp /etc/sudoers.d/vagrant /etc/sudoers.d/developer
 sed -i 's/vagrant/developer/g' /etc/sudoers.d/developer
+
+#Disable Wayland
+sed -i 's/\#WaylandEnable\=true/WaylandEnable\=false/g' /etc/gdm3/custom.conf
 apt-get autoremove
 apt-get clean
 
