@@ -34,6 +34,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ubuntudev.vm.provider :virtualbox do |vb|
 	  vb.customize ["modifyvm"     , :id, "--memory", "16384"]
       vb.customize ["modifyvm"     , :id, "--name"  , "Ubuntu NiFi Dev"]
+	  #Use VBox 6.1.30 for this. 6.1.32 and 6.1.34 have issues with multiple CPUs
       vb.customize ["modifyvm"     , :id, "--cpus"  , 2]
 	  vb.customize ["modifyvm"     , :id, "--clipboard","bidirectional"]
 	  vb.customize ["modifyvm"     , :id, "--vram","64"]
