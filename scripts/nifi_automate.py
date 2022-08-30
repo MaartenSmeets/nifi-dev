@@ -362,6 +362,7 @@ def import_parameters(filename, overwrite_existing_params, dummyrun):
                 if not dummyrun:
                     nipyapi.nifi.ParameterContextsApi().submit_parameter_context_update(context_id=param_context.id,
                                                                                         body=param_context)
+                    time.sleep(3)
                 else:
                     log.info("Dummy run. Not updating parameter context")
             else:
