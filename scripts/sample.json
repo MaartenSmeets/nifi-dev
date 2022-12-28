@@ -1,0 +1,34 @@
+{
+  "eventInstanceId": "a3f639bd-62e1-fe0c-9036-460fdae17abc",
+  "eventName": "ObjectStateUpdated",
+  "eventTime": "2021-04-16T11:41:27Z",
+  "eventSource": "SourceSystem",
+  "eventSubject": {
+    "objectIdentifier": "ABC"
+  },
+  "data": {
+    "objectIdentifier": "ABC",
+    "setpoints": [
+      {
+        "from": "2021-04-16T10:00:00Z",
+        "to": "2021-04-16T10:15:00Z",
+        "state": "ACTIVE"
+      },
+      {
+        "from": "2021-04-16T10:15:00Z",
+        "to": "2021-04-16T10:30:00Z",
+        "state": "ACTIVE"
+      },
+      {
+        "from": "2021-04-16T10:30:00Z",
+        "to": "2021-04-16T10:45:00Z",
+        "state": "INACTIVE"
+      },
+      {
+        "from": "2021-04-16T10:15:00Z",
+        "to": "2021-04-16T10:30:00Z",
+        "state": "INACTIVE"
+      }
+    ]
+  }
+}
