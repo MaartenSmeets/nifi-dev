@@ -1,0 +1,33 @@
+[{
+        "operation": "shift",
+        "spec": {
+            "*": "@(0,eventTime)"
+        }
+    }, {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "*": "=lastElement(@(1,&))"
+        }
+    }, {
+        "operation": "sort"
+    }, {
+        "operation": "shift",
+        "spec": {
+            "*": {
+                "@": "list.[]"
+            }
+        }
+    }, {
+        "operation": "modify-overwrite-beta",
+        "spec": {
+            "list": "=lastElement(@(1,list))"
+        }
+    }, {
+        "operation": "shift",
+        "spec": {
+            "list": {
+                "*": "&"
+            }
+        }
+    }
+]
